@@ -21,9 +21,16 @@
 #### Vorraussetzungen
 #### Notwendige Applikations Änderungen
 #### Ablauf
-### …<br />
+### Google Cloud<br />
+#### Vorraussetzungen
+#### Notwendige Applikations Änderungen
+#### Ablauf
+### DigitalOcean
+#### Vorraussetzungen
+#### Notwendige Applikations Änderungen
+#### Ablauf
 ### Clouddienst selbst hosten<br />
-#### OpenStack<br />
+#### OpenStack/RPiCluster<br />
 #### Architektur<br />
 #### Umsetzung<br />
 ## Skalierung<br />
