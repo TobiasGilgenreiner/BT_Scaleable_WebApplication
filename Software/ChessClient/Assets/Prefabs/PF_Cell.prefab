@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2936809528561964585}
   - component: {fileID: 3707296718836044766}
   - component: {fileID: -6735138063803142932}
+  - component: {fileID: -8212184313088408280}
   m_Layer: 0
   m_Name: PF_Cell
   m_TagString: Untagged
@@ -49,9 +50,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a22b9a0f9f869e4bbf83df033f5ecba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WKingSprite: {fileID: -6381331681718023698, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  BKingSprite: {fileID: 2581279858019328801, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  WQueenSprite: {fileID: 2262127039125398393, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  BQueenSprite: {fileID: 3625764785234014273, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  WRookSprite: {fileID: -895913822336128684, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  BRookSprite: {fileID: -8043906449996607461, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  WBishopSprite: {fileID: 5104103947353609379, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  BBishopSprite: {fileID: 4160703276510546385, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  WKnightSprite: {fileID: -7141851726320238273, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  BKnightSprite: {fileID: 3654758903977178377, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  WPawnSprite: {fileID: -3248077754109607419, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  BPawnSprite: {fileID: -4333177638012667817, guid: 77e22143413d78e429d8c567132a5ccb, type: 3}
+  Piece: 0
   rectTransform: {fileID: 0}
   Position: {x: 0, y: 0}
-  Piece: {fileID: 0}
+  Piece_Sprite: {fileID: 0}
 --- !u!212 &-6735138063803142932
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -104,3 +118,29 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!61 &-8212184313088408280
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6102232708552808895}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.5, y: 0.5}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 0.16, y: 0.16}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 1
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 333, y: 333}
+  m_EdgeRadius: 0
