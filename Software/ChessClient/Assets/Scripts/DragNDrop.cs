@@ -1,7 +1,9 @@
-using System.Collections;
+using System.Collections;   
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class DragNDrop : MonoBehaviour
 {
@@ -15,8 +17,11 @@ public class DragNDrop : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
     }
 
+    private List<Cell> TargetCells = null;
+    private List<Move> possibleMoves = null;
     private void OnMouseDown()
     {
+
         if (!isDragging)
         {
             startingPosition = transform.position;
@@ -33,9 +38,28 @@ public class DragNDrop : MonoBehaviour
                 }
             }
             transform.GetComponent<BoxCollider2D>().enabled = true;
+
+            possibleMoves = board.PossibleMoves.Where(x => x.StartPosition.Equals(transform.parent.GetComponent<Cell>().Position)).ToList();
+            TargetCells = new List<Cell>();
+            foreach(Move move in possibleMoves)
+            {
+                TargetCells.Add(board.BCells[move.TargetPosition.x, move.TargetPosition.y]);
+            }
+
+            TargetCells = TargetCells.Distinct().ToList();
+
+            foreach(Cell cell in TargetCells)
+            {
+                cell.GetComponent<SpriteRenderer>().color = new Color(255, 255, 255, 255);
+            }
         }
         else
         {
+            foreach (Cell cell in TargetCells)
+            {
+                cell.GetComponent<SpriteRenderer>().color = cell.BaseColor;
+            }
+
             Color color = GetComponent<SpriteRenderer>().color;
             GetComponent<SpriteRenderer>().color = new Color(color.r, color.g, color.b, 1);
             GetComponent<SpriteRenderer>().sortingOrder = 1;
@@ -60,18 +84,29 @@ public class DragNDrop : MonoBehaviour
                 }
             }
 
-            if(!GameObject.ReferenceEquals( targetcell, transform.parent.GetComponent<Cell>()))
+            if (TargetCells.Contains(targetcell))
             {
-                byte tempPiece = transform.parent.GetComponent<Cell>().Piece;
                 targetcell.ClearCell();
-                targetcell.Piece = tempPiece;
+                List<Move> resultingMoves = possibleMoves.Where(x => x.TargetPosition.x.Equals(targetcell.Position.x) && x.TargetPosition.y.Equals(targetcell.Position.y)).ToList();
+                if (resultingMoves.Count == 1)
+                {
+                    targetcell.Piece = resultingMoves.First().EndPiece;
+                }
+                else
+                {
+                    //TBD Actual Selection
+                    targetcell.Piece = resultingMoves.Last().EndPiece;
+                }
+
                 transform.parent.GetComponent<Cell>().ClearCell();
             }
             else
             {
                 byte tempPiece = transform.parent.GetComponent<Cell>().Piece;
-                targetcell.ClearCell();
-                targetcell.Piece = tempPiece;
+                Cell parentcell = transform.parent.GetComponent<Cell>();
+                parentcell.SetOldPieceNone();
+                parentcell.ClearCell();
+                parentcell.Piece = tempPiece;
             }
         }
 

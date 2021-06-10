@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using System;
 
 public class Cell : MonoBehaviour
 {
@@ -25,12 +26,15 @@ public class Cell : MonoBehaviour
     [HideInInspector]
     public RectTransform rectTransform;
     [HideInInspector]
+    public Color BaseColor = new Color(255, 255, 255, 255);
+    [HideInInspector]
     public Vector2Int Position;
     [HideInInspector]
     public Sprite Piece_Sprite;
 
-    public void Setup(Board board, Vector3 position)
+    public void Setup(Board board, Vector3 position, Vector2Int newPosition)
     {
+        Position = newPosition;
         //Setup Cell
         gameObject.layer = 2;
         transform.SetParent(board.transform);
@@ -66,7 +70,6 @@ public class Cell : MonoBehaviour
 
     public void ClearCell()
     {
-        oldPiece = 0;
         Piece = 0;
 
         if(pieceGameObject != null)
@@ -81,6 +84,11 @@ public class Cell : MonoBehaviour
 
     private GameObject pieceGameObject;
     private byte oldPiece = 0;
+
+    public void SetOldPieceNone()
+    {
+        oldPiece = PieceData.None;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -93,31 +101,49 @@ public class Cell : MonoBehaviour
             }
             else if ((Piece & PieceData.Pawn) != 0)
             {
+                if(pieceGameObject != null)
+                    DestroyImmediate(pieceGameObject);
+
                 SetupPieceDisplayGameObject();
                 Piece_Sprite = ((Piece & PieceData.White) != 0) ? (WPawnSprite) : (BPawnSprite);
             }
             else if ((Piece & PieceData.Knight) != 0)
             {
+                if (pieceGameObject != null)
+                    DestroyImmediate(pieceGameObject);
+
                 SetupPieceDisplayGameObject();
                 Piece_Sprite = ((Piece & PieceData.White) != 0) ? (WKnightSprite) : (BKnightSprite);
             }
             else if ((Piece & PieceData.Bishop) != 0)
             {
+                if (pieceGameObject != null)
+                    DestroyImmediate(pieceGameObject);
+
                 SetupPieceDisplayGameObject();
                 Piece_Sprite = ((Piece & PieceData.White) != 0) ? (WBishopSprite) : (BBishopSprite);
             }
             else if ((Piece & PieceData.Queen) != 0)
             {
+                if (pieceGameObject != null)
+                    DestroyImmediate(pieceGameObject);
+
                 SetupPieceDisplayGameObject();
                 Piece_Sprite = ((Piece & PieceData.White) != 0) ? (WQueenSprite) : (BQueenSprite);
             }
             else if ((Piece & PieceData.Rook) != 0)
             {
+                if (pieceGameObject != null)
+                    DestroyImmediate(pieceGameObject);
+
                 SetupPieceDisplayGameObject();
                 Piece_Sprite = ((Piece & PieceData.White) != 0) ? (WRookSprite) : (BRookSprite);
             }
             else if ((Piece & PieceData.King) != 0)
             {
+                if (pieceGameObject != null)
+                    DestroyImmediate(pieceGameObject);
+
                 SetupPieceDisplayGameObject();
                 Piece_Sprite = ((Piece & PieceData.White) != 0) ? (WKingSprite) : (BKingSprite);
             }
@@ -127,8 +153,15 @@ public class Cell : MonoBehaviour
             }
             oldPiece = Piece;
 
-            if(pieceGameObject != null)
+            byte[] newGamePosition = new byte[64];
+            Array.Copy(transform.parent.GetComponent<Board>().GamePosition, newGamePosition, transform.parent.GetComponent<Board>().GamePosition.Length);
+            newGamePosition[Position.x + Position.y * 8] = Piece;
+            Array.Copy(newGamePosition,transform.parent.GetComponent<Board>().GamePosition, newGamePosition.Length);
+
+            if (pieceGameObject != null)
+            {
                 pieceGameObject.GetComponent<SpriteRenderer>().sprite = Piece_Sprite;
+            }
         }
         
     }
