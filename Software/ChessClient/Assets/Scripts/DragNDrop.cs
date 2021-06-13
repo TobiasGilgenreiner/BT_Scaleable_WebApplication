@@ -1,3 +1,4 @@
+using ChessClassLib;
 using System.Collections;   
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,6 @@ public class DragNDrop : MonoBehaviour
     private List<Move> possibleMoves = null;
     private void OnMouseDown()
     {
-
         if (!isDragging)
         {
             startingPosition = transform.position;
@@ -111,11 +111,6 @@ public class DragNDrop : MonoBehaviour
         }
 
         isDragging = (isDragging) ? (false) : (true);
-    }
-
-    private void OnMouseUp()
-    {
-
     }
 
     private void Update()

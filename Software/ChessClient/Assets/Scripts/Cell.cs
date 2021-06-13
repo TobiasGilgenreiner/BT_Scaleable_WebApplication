@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using System;
+using ChessClassLib;
 
 public class Cell : MonoBehaviour
 {
@@ -21,7 +22,8 @@ public class Cell : MonoBehaviour
     public Sprite WPawnSprite;
     public Sprite BPawnSprite;
     #endregion
-
+    
+    [HideInInspector]
     public byte Piece = PieceData.None;
     [HideInInspector]
     public RectTransform rectTransform;
@@ -31,6 +33,9 @@ public class Cell : MonoBehaviour
     public Vector2Int Position;
     [HideInInspector]
     public Sprite Piece_Sprite;
+
+    private GameObject pieceGameObject;
+    private byte oldPiece = 0;
 
     public void Setup(Board board, Vector3 position, Vector2Int newPosition)
     {
@@ -81,9 +86,6 @@ public class Cell : MonoBehaviour
     {
         
     }
-
-    private GameObject pieceGameObject;
-    private byte oldPiece = 0;
 
     public void SetOldPieceNone()
     {
