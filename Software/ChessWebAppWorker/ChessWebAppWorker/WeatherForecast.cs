@@ -1,6 +1,6 @@
 using System;
 
-namespace RESTfulWebApplication
+namespace ChessWebAppWorker
 {
     public class WeatherForecast
     {

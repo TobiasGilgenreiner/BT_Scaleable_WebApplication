@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace ChessClassLib
 {
@@ -103,6 +108,13 @@ namespace ChessClassLib
             {
                 throw new System.Exception("Invalid PositionArray");
             }
+        }
+
+        public static bool ISStringFen(string FenString)
+        {
+            Regex FenRegex = new Regex("\\s*([rnbqkpRNBQKP1-8]+\\/){7}([rnbqkpRNBQKP1-8]+)");
+
+            return FenRegex.Match(FenString).Success;
         }
     }
 

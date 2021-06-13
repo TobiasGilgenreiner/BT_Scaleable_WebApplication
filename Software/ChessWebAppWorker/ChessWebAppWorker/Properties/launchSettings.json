@@ -4,8 +4,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:63995",
-      "sslPort": 44396
+      "applicationUrl": "http://localhost:52902",
+      "sslPort": 44379
     }
   },
   "profiles": {
@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "RESTfulWebApplication": {
+    "ChessWebAppWorker": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,
