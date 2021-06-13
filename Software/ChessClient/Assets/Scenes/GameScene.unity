@@ -218,11 +218,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EvenColor:
     serializedVersion: 2
-    rgba: 4284712356
+    rgba: 4281816689
   OddColor:
     serializedVersion: 2
-    rgba: 4281816689
+    rgba: 4284712356
   CellPrefab: {fileID: 6102232708552808895, guid: e8e71ce43d7dd3b46a30e0917fd4f8af, type: 3}
+  GamePosition: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 --- !u!1 &200723677
 GameObject:
   m_ObjectHideFlags: 0

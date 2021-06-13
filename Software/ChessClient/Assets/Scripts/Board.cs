@@ -51,14 +51,12 @@ public class Board : MonoBehaviour
         GamePosition = Fen.LoadPositionFromFen(StartUpFen);
         Debug.Log(Fen.PositionToFen(GamePosition));
         //TBD make dependent on gamemanager
-        //PossibleMoves = GetAllPossibleMoves(GamePosition, transform.GetComponentInParent<GameManager>().NextToMove, true);
     }
 
     private byte[] oldGamePosition = new byte[64];
     // Update is called once per frame
     void Update()
     {
-        
         if (!Enumerable.SequenceEqual(oldGamePosition, GamePosition))
         {
             for (int y = 0; y < 8; ++y)
@@ -69,7 +67,29 @@ public class Board : MonoBehaviour
                 }
             }
             Array.Copy(GamePosition, oldGamePosition, GamePosition.Length);
-            PossibleMoves = GetAllPossibleMoves(GamePosition, transform.GetComponentInParent<GameManager>().NextToMove, true);
+
+            if (transform.GetComponentInParent<GameManager>().NextToMove.Equals(PieceData.White))
+            {
+                PossibleMoves = ChessAI.GetAllPossibleMoves(GamePosition, transform.GetComponentInParent<GameManager>().NextToMove, true);
+            }
+            else
+            {
+                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
+                Move move;
+                int eval = ChessAI.NegaMax(3, ChessAI.NegInfinity, ChessAI.Infinity, GamePosition, transform.GetComponentInParent<GameManager>().NextToMove, out move);
+                stopwatch.Stop();
+
+                if (move != null)
+                {
+                    Debug.Log("Move: (" + move.StartPosition.x + "," + move.StartPosition.x + ") -> (" + move.TargetPosition.x + "," + move.TargetPosition.y + ")\nEvaluation: " + eval + " Time: " + stopwatch.ElapsedMilliseconds + "ms");
+                    byte[] tempGamePosition = new byte[64];
+                    Array.Copy(GamePosition, tempGamePosition, GamePosition.Length);
+                    tempGamePosition[move.StartPosition.x + move.StartPosition.y * 8] = PieceData.None;
+                    tempGamePosition[move.TargetPosition.x + move.TargetPosition.y * 8] = move.EndPiece;
+                    Array.Copy(tempGamePosition, GamePosition, tempGamePosition.Length);
+                }
+            }
             transform.GetComponentInParent<GameManager>().NextToMove = (transform.GetComponentInParent<GameManager>().NextToMove.Equals(PieceData.White)) ? (PieceData.Black) : (PieceData.White);
         }
     }
@@ -77,11 +97,22 @@ public class Board : MonoBehaviour
     [HideInInspector]
     public List<Move> PossibleMoves = new List<Move>();
 
-    public List<Move> GetAllPossibleMoves(byte[] gamePosition, byte color, bool CheckForCheck = false)
+    public int GetNextMove(byte[] gamePosition, byte color)
+    {
+        throw new System.NotImplementedException("GetNextMove");
+    }
+}
+
+public static class ChessAI
+{
+    public static int Infinity = 99999;
+    public static int NegInfinity = -Infinity;
+
+    public static List<Move> GetAllPossibleMoves(byte[] gamePosition, byte color, bool CheckForCheck = false)
     {
         List<Move> PossibleMoves = new List<Move>();
 
-        for(int y = 0; y < 8; ++y)
+        for (int y = 0; y < 8; ++y)
         {
             for (int x = 0; x < 8; ++x)
             {
@@ -93,22 +124,22 @@ public class Board : MonoBehaviour
 
                 if ((gamePosition[x + y * 8] & PieceData.Knight) != 0)
                     PossibleMoves.AddRange(PieceData.GetKnightMoves(gamePosition, new Vector2Int(x, y)));
-                
+
                 if ((gamePosition[x + y * 8] & PieceData.Bishop) != 0)
                     PossibleMoves.AddRange(PieceData.GetBishopMoves(gamePosition, new Vector2Int(x, y)));
 
                 if ((gamePosition[x + y * 8] & PieceData.Rook) != 0)
                     PossibleMoves.AddRange(PieceData.GetRookMoves(gamePosition, new Vector2Int(x, y)));
-                
+
                 if ((gamePosition[x + y * 8] & PieceData.Queen) != 0)
                     PossibleMoves.AddRange(PieceData.GetQueenMoves(gamePosition, new Vector2Int(x, y)));
-                
+
                 if ((gamePosition[x + y * 8] & PieceData.King) != 0)
                     PossibleMoves.AddRange(PieceData.GetKingMoves(gamePosition, new Vector2Int(x, y)));
             }
         }
 
-        foreach(Move move in PossibleMoves)
+        foreach (Move move in PossibleMoves)
         {
             move.StartPiece += color;
             move.EndPiece += color;
@@ -135,7 +166,7 @@ public class Board : MonoBehaviour
             foreach (Move move in Remove)
             {
                 PossibleMoves.Remove(move);
-            }          
+            }
         }
 
         if (!PossibleMoves.Any())
@@ -144,27 +175,76 @@ public class Board : MonoBehaviour
         return PossibleMoves;
     }
 
-    //TBD Promote
+    public static int NegaMax(int depth, int alpha, int beta, byte[] gamePosition, byte color, out Move bestmove)
+    {
+        bestmove = null;
+        if (depth == 0)
+        {
+            return EvaluatePosition(gamePosition, color);
+        }
 
-    public int EvaluatePosition(byte[] gamePosition, byte color)
+        byte EnemyColor = (color.Equals(PieceData.White)) ? (PieceData.Black) : (PieceData.White);
+        List<Move> Moves = GetAllPossibleMoves(gamePosition, color, true);
+
+        if (Moves.Count == 0)
+        {
+            if (PieceData.GetChecks(gamePosition, color, GetAllPossibleMoves(gamePosition, EnemyColor, true)).Any())
+            {
+                return NegInfinity;
+            }
+            return 0;
+        }
+        
+        int value = NegInfinity;
+        Move bestMoveout = null;
+
+        foreach (Move move in Moves)
+        {
+            byte[] tempGamePosition = new byte[64];
+            Array.Copy(gamePosition, tempGamePosition, gamePosition.Length);
+            tempGamePosition[move.StartPosition.x + move.StartPosition.y * 8] = PieceData.None;
+            tempGamePosition[move.TargetPosition.x + move.TargetPosition.y * 8] = move.EndPiece;
+            int eval = -NegaMax(depth - 1, -beta, -alpha, tempGamePosition, EnemyColor, out bestMoveout);
+
+            if (eval >= value)
+            {
+                value = eval;
+                bestmove = move;
+            }
+
+            alpha = (alpha >= value) ? (alpha) : (value);
+            
+            if (alpha > beta)
+                break;
+        }
+        return value;
+    }
+
+    public static Move GetRandMove(byte[] gamePosition, byte color)
+    {
+        List<Move> Moves = GetAllPossibleMoves(gamePosition, color, true);
+        System.Random random = new System.Random();
+        
+        return (Moves.Any()) ? (Moves[random.Next(0, Moves.Count)]) : (null);
+    }
+
+    public static int EvaluatePosition(byte[] gamePosition, byte color)
     {
         int result = 0;
-        foreach(byte square in gamePosition)
+        foreach (byte square in gamePosition)
         {
             if ((color & square) != 0)
             {
                 result += PieceData.PieceValue[(byte)(square & ~color)];
             }
+            else
+            {
+                result -= PieceData.PieceValue[(byte)(square & ~((color.Equals(PieceData.White)) ? (PieceData.Black) : (PieceData.White)))];
+            }
         }
-
         //TBD Morecomplex with betterpositioned pieces beeing worth more etc
 
         return result;
-    }
-
-    public int GetNextMove(byte[] gamePosition, byte color)
-    {
-        throw new System.NotImplementedException("GetNextMove");
     }
 }
 
@@ -183,12 +263,12 @@ public static class PieceData
 
     public static Dictionary<byte, int> PieceValue = new Dictionary<byte, int>()
     {
-        [PieceData.King] = 100,
-        [PieceData.Queen] = 5,
-        [PieceData.Rook] = 4,
-        [PieceData.Bishop] = 3,
-        [PieceData.Knight] = 2,
-        [PieceData.Pawn] = 1,
+        [PieceData.King] = 10000,
+        [PieceData.Queen] = 900,
+        [PieceData.Rook] = 500,
+        [PieceData.Bishop] = 300,
+        [PieceData.Knight] = 300,
+        [PieceData.Pawn] = 100,
         [PieceData.None] = 0,
     };
     public static Vector2Int? GetKingPosition(byte[] gamePosition, byte color)
@@ -209,7 +289,13 @@ public static class PieceData
 
     public static List<Move> GetChecks(byte[] gamePosition, byte kingColor, List<Move> possibleEnemyMoves)
     {
-        Vector2Int KingPosition = (Vector2Int)PieceData.GetKingPosition(gamePosition, kingColor);
+        Vector2Int? tempKing = PieceData.GetKingPosition(gamePosition, kingColor);
+        Vector2Int KingPosition;
+
+        if (tempKing != null)
+            KingPosition = (Vector2Int)tempKing;
+        else
+            return new List<Move>();
 
         return possibleEnemyMoves.Where(x => x.TargetPosition.x.Equals(KingPosition.x) && x.TargetPosition.y.Equals(KingPosition.y)).ToList();
     }
@@ -351,7 +437,7 @@ public static class PieceData
                 }
 
                 //move two forward
-                if (startPosition.y == 1 && gamePosition[startPosition.x + (startPosition.y + 2) * 8].Equals(PieceData.None))
+                if (startPosition.y == 1 && gamePosition[startPosition.x + (startPosition.y + 2) * 8].Equals(PieceData.None) && gamePosition[startPosition.x + (startPosition.y + 1) * 8].Equals(PieceData.None))
                 {
                     PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y + 2), PieceData.Pawn, PieceData.Pawn));
                 }
@@ -409,7 +495,7 @@ public static class PieceData
                 }
 
                 //move two forward
-                if (startPosition.y == 6 && gamePosition[startPosition.x + (startPosition.y - 2) * 8].Equals(PieceData.None))
+                if (startPosition.y == 6 && gamePosition[startPosition.x + (startPosition.y - 2) * 8].Equals(PieceData.None) && gamePosition[startPosition.x + (startPosition.y - 1) * 8].Equals(PieceData.None))
                 {
                     PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y - 2), PieceData.Pawn, PieceData.Pawn));
                 }

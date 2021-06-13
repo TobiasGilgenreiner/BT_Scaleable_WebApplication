@@ -6,7 +6,21 @@ public class GameManager : MonoBehaviour
 {
     public Board Board;
     [HideInInspector]
-    public byte NextToMove = PieceData.White;
+    private byte nexttomove = PieceData.White;
+    public byte NextToMove
+    {
+        get
+        {
+            return nexttomove;
+        }
+        set
+        {
+            if(nexttomove != value)
+            {
+                nexttomove = value;
+            }
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
