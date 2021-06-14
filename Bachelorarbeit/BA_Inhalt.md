@@ -6,12 +6,19 @@
 ## Webapplikationen<br />
 ### Verfügbarkeit<br />
 ### Skalierbarkeit<br />
+#### Horizontale Skalierung<br />
+#### Verticale Skalierung<br />
 ### Testbarkeit<br />
+#### Belastungstest<br />
+#### Stresstest<br />
+
 # Umsetzung<br />
 ## Architektur<br />
-### Database/Daten<br />
 ### API-Umsetzung<br />
+#### ManagerAPI<br />
+#### WorkerAPI<br />
 ### UI<br />
+#### Schachclient
 ## Portierung<br />
 ### AWS<br />
 #### Vorraussetzungen
@@ -25,22 +32,19 @@
 #### Vorraussetzungen
 #### Notwendige Applikations Änderungen
 #### Ablauf
-### DigitalOcean
-#### Vorraussetzungen
-#### Notwendige Applikations Änderungen
-#### Ablauf
-### Clouddienst selbst hosten<br />
+### Skalierte Applikation selbst hosten<br />
 #### OpenStack/RPiCluster<br />
 #### Architektur<br />
 #### Umsetzung<br />
 ## Skalierung<br />
 ### Architektur<br />
-### Aufwand<br />
 ### Limitationen<br />
+
 ## BelastungsTests<br />
 ### Test Aufbau<br />
 ### Test durchführung<br />
 ### Test Resultat<br />
+
 # Ergebnisse<br />
 ## Vergleich: Stärken und Schwächen der Dienste<br />
 ## Verfügbarkeit<br />
