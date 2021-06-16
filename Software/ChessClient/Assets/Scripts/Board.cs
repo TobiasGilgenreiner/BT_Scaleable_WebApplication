@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 
 public class Board : MonoBehaviour
 {
+    public string ServerAdress = "http://localhost:5000";
     public Color32 EvenColor = new Color(255, 255, 255, 255);
     public Color32 OddColor = new Color(0, 0, 0, 255);
     public GameObject CellPrefab;
@@ -87,7 +88,7 @@ public class Board : MonoBehaviour
                 using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
                 {
                     //Get WorkerNode
-                    client.BaseAddress = new Uri("http://localhost:5000");
+                    client.BaseAddress = new Uri(ServerAdress);
                     HttpResponseMessage response = client.GetAsync("/ChessAI").Result;
 
                     //GetNewJobinWorker

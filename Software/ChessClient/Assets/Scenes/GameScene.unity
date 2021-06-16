@@ -168,6 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Board: {fileID: 51764069}
+  NextToMove: 64
 --- !u!1 &51764067
 GameObject:
   m_ObjectHideFlags: 0
@@ -216,6 +217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1b25dc511ea9348bb950676c3a7746, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ServerAdress: http://localhost:5000
   EvenColor:
     serializedVersion: 2
     rgba: 4281816689
