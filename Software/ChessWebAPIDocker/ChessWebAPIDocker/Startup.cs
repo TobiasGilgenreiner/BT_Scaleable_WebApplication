@@ -1,9 +1,7 @@
-using ChessWebAppWorker.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,8 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-
-namespace ChessWebAppWorker
+namespace ChessWebAPIDocker
 {
     public class Startup
     {
@@ -30,12 +27,10 @@ namespace ChessWebAppWorker
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDbContext<WorkerResultContext>(opt =>
-                                               opt.UseInMemoryDatabase("WorkerResults"));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ChessWebAppWorker", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ChessWebAPIDocker", Version = "v1" });
             });
         }
 
@@ -46,7 +41,7 @@ namespace ChessWebAppWorker
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ChessWebAppWorker v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ChessWebAPIDocker v1"));
             }
 
             app.UseHttpsRedirection();

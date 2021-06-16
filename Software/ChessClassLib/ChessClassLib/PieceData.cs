@@ -30,6 +30,27 @@ namespace ChessClassLib
             [PieceData.Pawn] = 100,
             [PieceData.None] = 0,
         };
+        
+        public static byte[] MakeMove(byte[] gamePosition, Move move)
+        {
+            byte[] resultGamePosition = new byte[64];
+            Array.Copy(gamePosition, resultGamePosition, gamePosition.Length);
+            resultGamePosition[move.StartPosition.x + move.StartPosition.y * 8] = PieceData.None;
+            resultGamePosition[move.TargetPosition.x + move.TargetPosition.y * 8] = move.EndPiece;
+
+            return resultGamePosition;
+        }
+
+        public static byte[] UnMakeMove(byte[] gamePosition, Move move)
+        {
+            byte[] resultGamePosition = new byte[64];
+            Array.Copy(gamePosition, resultGamePosition, gamePosition.Length);
+            resultGamePosition[move.TargetPosition.x + move.TargetPosition.y * 8] = PieceData.None;
+            resultGamePosition[move.StartPosition.x + move.StartPosition.y * 8] = move.StartPiece;
+
+            return resultGamePosition;
+        }
+
         public static Vector2Int? GetKingPosition(byte[] gamePosition, byte color)
         {
             for (int y = 0; y < 8; ++y)
