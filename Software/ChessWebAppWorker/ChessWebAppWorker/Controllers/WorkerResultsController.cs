@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using ChessWebAppWorker;
+﻿using ChessClassLib;
 using ChessWebAppWorker.Models;
-using ChessClassLib;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ChessWebAppWorker.Controllers
 {
@@ -24,6 +20,13 @@ namespace ChessWebAppWorker.Controllers
         }
 
         [HttpGet]
+        [Route("ActiveThreads")]
+        public ActionResult GetNumberofActiveTasks()
+        {
+            return Ok(_context.WorkerResults.Where(x => x.Finished == false).Count());
+        }
+
+        [HttpGet]
         [Route("Result")]
         public async Task<IActionResult> GetWorkerResult(int? id)
         {
@@ -32,7 +35,7 @@ namespace ChessWebAppWorker.Controllers
                 return BadRequest("No workerresult with this id");
             }
             int tempid = (int)id;
-            WorkerResult workerResult = await _context.WorkerResult.FirstAsync(x => x.WorkerID.Equals(tempid));
+            WorkerResult workerResult = await _context.WorkerResults.FirstAsync(x => x.WorkerID.Equals(tempid));
             
             if(workerResult.Finished)
             {
@@ -50,9 +53,9 @@ namespace ChessWebAppWorker.Controllers
         // POST: WorkerResults/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpGet]
         [Route("Start")]
-        public async Task<IActionResult> StartNewWorker(string fenPositionString, byte color)
+        public async Task<IActionResult> StartNewWorker(string fenPositionString, byte color, ChessAI.OponentAlgorith oponent)
         {
             if (fenPositionString == null || !Fen.ISStringFen(fenPositionString) || (color != PieceData.White && color != PieceData.Black))
             {
@@ -74,7 +77,17 @@ namespace ChessWebAppWorker.Controllers
 
                     //Start new Thread
                     WorkerInfo newWorkerInfo = new WorkerInfo(Fen.LoadPositionFromFen(fenPositionString), color, newWorkerResult.WorkerID);
-                    if (ThreadPool.QueueUserWorkItem(new ChessAIService(new DbContextFactory()).GetRandMoveWrapper, newWorkerInfo))
+                    bool WorkerQueued = false; 
+                    if(oponent.Equals(ChessAI.OponentAlgorith.Rand))
+                    {
+                        WorkerQueued = ThreadPool.QueueUserWorkItem(new ChessAIService(new DbContextFactory()).GetRandMoveWrapper, newWorkerInfo);
+                    }
+                    else if(oponent.Equals(ChessAI.OponentAlgorith.NegaMax))
+                    {
+                        WorkerQueued = ThreadPool.QueueUserWorkItem(new ChessAIService(new DbContextFactory()).GetNegaMaxMoveWrapper, newWorkerInfo);
+                    }
+
+                    if (WorkerQueued)
                     {
                         await _context.SaveChangesAsync();
                         return Accepted(HttpContext.Request.PathBase + "/Worker/Result/", newWorkerInfo.WorkerID);
@@ -95,7 +108,7 @@ namespace ChessWebAppWorker.Controllers
 
         private bool WorkerResultExists(int id)
         {
-            return _context.WorkerResult.Any(x => x.WorkerID == id);
+            return _context.WorkerResults.Any(x => x.WorkerID == id);
         }
     }
 }

@@ -9,6 +9,12 @@ namespace ChessClassLib
 {
     public static class ChessAI
     {
+        public enum OponentAlgorith : int
+        {
+            Rand = 0,
+            NegaMax = 1
+        }
+
         public static int Infinity = 99999;
         public static int NegInfinity = -Infinity;
 

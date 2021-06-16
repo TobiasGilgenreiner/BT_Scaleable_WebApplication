@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ChessWebAppWorker.Models;
+﻿using ChessWebAppWorker.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChessWebAppWorker

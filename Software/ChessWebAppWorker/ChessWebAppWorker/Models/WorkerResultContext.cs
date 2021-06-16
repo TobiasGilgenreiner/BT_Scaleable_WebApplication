@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ChessWebAppWorker;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ChessWebAppWorker.Models
 {
@@ -23,6 +18,6 @@ namespace ChessWebAppWorker.Models
             _options = options;
         }
 
-        public DbSet<ChessWebAppWorker.WorkerResult> WorkerResult { get; set; }
+        public DbSet<ChessWebAppWorker.WorkerResult> WorkerResults { get; set; }
     }
 }
