@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace ChessClassLib
 {
@@ -30,22 +29,22 @@ namespace ChessClassLib
                         continue;
 
                     if ((gamePosition[x + y * 8] & PieceData.Pawn) != 0)
-                        PossibleMoves.AddRange(PieceData.GetPawnMoves(gamePosition, new Vector2Int(x, y)));
+                        PossibleMoves.AddRange(PieceData.GetPawnMoves(gamePosition, new HelperVector2Int(x, y)));
 
                     if ((gamePosition[x + y * 8] & PieceData.Knight) != 0)
-                        PossibleMoves.AddRange(PieceData.GetKnightMoves(gamePosition, new Vector2Int(x, y)));
+                        PossibleMoves.AddRange(PieceData.GetKnightMoves(gamePosition, new HelperVector2Int(x, y)));
 
                     if ((gamePosition[x + y * 8] & PieceData.Bishop) != 0)
-                        PossibleMoves.AddRange(PieceData.GetBishopMoves(gamePosition, new Vector2Int(x, y)));
+                        PossibleMoves.AddRange(PieceData.GetBishopMoves(gamePosition, new HelperVector2Int(x, y)));
 
                     if ((gamePosition[x + y * 8] & PieceData.Rook) != 0)
-                        PossibleMoves.AddRange(PieceData.GetRookMoves(gamePosition, new Vector2Int(x, y)));
+                        PossibleMoves.AddRange(PieceData.GetRookMoves(gamePosition, new HelperVector2Int(x, y)));
 
                     if ((gamePosition[x + y * 8] & PieceData.Queen) != 0)
-                        PossibleMoves.AddRange(PieceData.GetQueenMoves(gamePosition, new Vector2Int(x, y)));
+                        PossibleMoves.AddRange(PieceData.GetQueenMoves(gamePosition, new HelperVector2Int(x, y)));
 
                     if ((gamePosition[x + y * 8] & PieceData.King) != 0)
-                        PossibleMoves.AddRange(PieceData.GetKingMoves(gamePosition, new Vector2Int(x, y)));
+                        PossibleMoves.AddRange(PieceData.GetKingMoves(gamePosition, new HelperVector2Int(x, y)));
                 }
             }
 
@@ -78,9 +77,6 @@ namespace ChessClassLib
                     PossibleMoves.Remove(move);
                 }
             }
-
-            if (!PossibleMoves.Any())
-                Debug.Log("No more moves left: " + ((color.Equals(PieceData.White)) ? ("Black wins!") : ("White wins!")));
 
             return PossibleMoves;
         }
@@ -160,14 +156,14 @@ namespace ChessClassLib
 
     public class Move
     {
-        public Vector2Int StartPosition { get; set; }
-        public Vector2Int TargetPosition { get; set; }
+        public HelperVector2Int StartPosition { get; set; }
+        public HelperVector2Int TargetPosition { get; set; }
 
         public byte StartPiece { get; set; }
 
         public byte EndPiece { get; set; }
 
-        public Move(Vector2Int startPosition, Vector2Int targetPosition, byte startPiece, byte endPiece)
+        public Move(HelperVector2Int startPosition, HelperVector2Int targetPosition, byte startPiece, byte endPiece)
         {
             StartPosition = startPosition;
             TargetPosition = targetPosition;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace ChessClassLib
 {
@@ -51,7 +50,7 @@ namespace ChessClassLib
             return resultGamePosition;
         }
 
-        public static Vector2Int? GetKingPosition(byte[] gamePosition, byte color)
+        public static HelperVector2Int GetKingPosition(byte[] gamePosition, byte color)
         {
             for (int y = 0; y < 8; ++y)
             {
@@ -59,7 +58,7 @@ namespace ChessClassLib
                 {
                     if ((gamePosition[x + 8 * y] & (PieceData.King)) != 0 && (gamePosition[x + 8 * y] & (color)) != 0)
                     {
-                        return new Vector2Int(x, y);
+                        return new HelperVector2Int(x, y);
                     }
                 }
             }
@@ -69,11 +68,11 @@ namespace ChessClassLib
 
         public static List<Move> GetChecks(byte[] gamePosition, byte kingColor, List<Move> possibleEnemyMoves)
         {
-            Vector2Int? tempKing = PieceData.GetKingPosition(gamePosition, kingColor);
-            Vector2Int KingPosition;
+            HelperVector2Int tempKing = PieceData.GetKingPosition(gamePosition, kingColor);
+            HelperVector2Int KingPosition;
 
             if (tempKing != null)
-                KingPosition = (Vector2Int)tempKing;
+                KingPosition = tempKing;
             else
                 return new List<Move>();
 
@@ -122,7 +121,7 @@ namespace ChessClassLib
         /// <summary>
         /// Returns moves intercepted by own or enemy pieces
         /// </summary>
-        private static List<Move> GetInterceptedMoves(byte[] gamePosition, List<Move> possibleMoves, Vector2Int directionVector)
+        private static List<Move> GetInterceptedMoves(byte[] gamePosition, List<Move> possibleMoves, HelperVector2Int directionVector)
         {
             IOrderedEnumerable<Move> tempCollection;
             if (directionVector.x >= 0)
@@ -143,7 +142,7 @@ namespace ChessClassLib
                 possibleMoves = tempCollection.ThenByDescending(x => x.TargetPosition.x).ToList();
             }
 
-            Vector2Int startPosition = possibleMoves.First().StartPosition;
+            HelperVector2Int startPosition = possibleMoves.First().StartPosition;
             byte color = ((gamePosition[startPosition.x + startPosition.y * 8] & PieceData.White) != 0) ? (PieceData.White) : (PieceData.Black);
 
             List<Move> InvalidMoves = new List<Move>();
@@ -155,7 +154,7 @@ namespace ChessClassLib
             int y = startPosition.y;
             while (x < 8 && x >= 0 && y < 8 && y >= 0)
             {
-                DirectionMoves.Add(new Move(startPosition, new Vector2Int(x, y), PieceData.None, PieceData.None));
+                DirectionMoves.Add(new Move(startPosition, new HelperVector2Int(x, y), PieceData.None, PieceData.None));
                 x += directionVector.x;
                 y += directionVector.y;
             }
@@ -190,7 +189,7 @@ namespace ChessClassLib
             return InvalidMoves;
         }
 
-        public static List<Move> GetPawnMoves(byte[] gamePosition, Vector2Int startPosition)
+        public static List<Move> GetPawnMoves(byte[] gamePosition, HelperVector2Int startPosition)
         {
             List<Move> PossibleMoves = new List<Move>();
 
@@ -201,25 +200,25 @@ namespace ChessClassLib
                     //move one forward
                     if (gamePosition[startPosition.x + (startPosition.y + 1) * 8].Equals(PieceData.None))
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y + 1), PieceData.Pawn, PieceData.Pawn));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y + 1), PieceData.Pawn, PieceData.Pawn));
                     }
 
                     //capture to the right
                     if (startPosition.x + 1 <= 7 && (gamePosition[startPosition.x + 1 + (startPosition.y + 1) * 8] & PieceData.Black) != 0)
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.Pawn, PieceData.Pawn));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.Pawn, PieceData.Pawn));
                     }
 
                     //capture to the left
                     if (startPosition.x - 1 >= 0 && (gamePosition[startPosition.x - 1 + (startPosition.y + 1) * 8] & PieceData.Black) != 0)
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.Pawn, PieceData.Pawn));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.Pawn, PieceData.Pawn));
                     }
 
                     //move two forward
                     if (startPosition.y == 1 && gamePosition[startPosition.x + (startPosition.y + 2) * 8].Equals(PieceData.None) && gamePosition[startPosition.x + (startPosition.y + 1) * 8].Equals(PieceData.None))
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y + 2), PieceData.Pawn, PieceData.Pawn));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y + 2), PieceData.Pawn, PieceData.Pawn));
                     }
                 }
                 else if (startPosition.y == 6)
@@ -227,28 +226,28 @@ namespace ChessClassLib
                     //move one forward
                     if (gamePosition[startPosition.x + (startPosition.y + 1) * 8].Equals(PieceData.None))
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y + 1), PieceData.Pawn, PieceData.Knight));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y + 1), PieceData.Pawn, PieceData.Bishop));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y + 1), PieceData.Pawn, PieceData.Rook));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y + 1), PieceData.Pawn, PieceData.Queen));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y + 1), PieceData.Pawn, PieceData.Knight));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y + 1), PieceData.Pawn, PieceData.Bishop));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y + 1), PieceData.Pawn, PieceData.Rook));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y + 1), PieceData.Pawn, PieceData.Queen));
                     }
 
                     //capture to the right
                     if (startPosition.x + 1 <= 7 && (gamePosition[startPosition.x + 1 + (startPosition.y + 1) * 8] & PieceData.Black) != 0)
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.Pawn, PieceData.Knight));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.Pawn, PieceData.Bishop));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.Pawn, PieceData.Rook));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.Pawn, PieceData.Queen));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.Pawn, PieceData.Knight));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.Pawn, PieceData.Bishop));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.Pawn, PieceData.Rook));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.Pawn, PieceData.Queen));
                     }
 
                     //capture to the left
                     if (startPosition.x - 1 >= 0 && (gamePosition[startPosition.x - 1 + (startPosition.y + 1) * 8] & PieceData.Black) != 0)
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.Pawn, PieceData.Knight));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.Pawn, PieceData.Bishop));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.Pawn, PieceData.Rook));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.Pawn, PieceData.Queen));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.Pawn, PieceData.Knight));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.Pawn, PieceData.Bishop));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.Pawn, PieceData.Rook));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.Pawn, PieceData.Queen));
                     }
                 }
             }
@@ -259,25 +258,25 @@ namespace ChessClassLib
                     //move one forward
                     if (gamePosition[startPosition.x + (startPosition.y - 1) * 8].Equals(PieceData.None))
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y - 1), PieceData.Pawn, PieceData.Pawn));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y - 1), PieceData.Pawn, PieceData.Pawn));
                     }
 
                     //capture to the rigth
                     if (startPosition.x + 1 <= 7 && (gamePosition[startPosition.x + 1 + (startPosition.y - 1) * 8] & PieceData.White) != 0)
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.Pawn, PieceData.Pawn));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.Pawn, PieceData.Pawn));
                     }
 
                     //capture to the left
                     if (startPosition.x - 1 >= 0 && (gamePosition[startPosition.x - 1 + (startPosition.y - 1) * 8] & PieceData.White) != 0)
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.Pawn, PieceData.Pawn));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.Pawn, PieceData.Pawn));
                     }
 
                     //move two forward
                     if (startPosition.y == 6 && gamePosition[startPosition.x + (startPosition.y - 2) * 8].Equals(PieceData.None) && gamePosition[startPosition.x + (startPosition.y - 1) * 8].Equals(PieceData.None))
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y - 2), PieceData.Pawn, PieceData.Pawn));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y - 2), PieceData.Pawn, PieceData.Pawn));
                     }
                 }
                 else if (startPosition.y == 1)
@@ -285,46 +284,46 @@ namespace ChessClassLib
                     //move one forward
                     if (gamePosition[startPosition.x + (startPosition.y - 1) * 8].Equals(PieceData.None))
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y - 1), PieceData.Pawn, PieceData.Knight));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y - 1), PieceData.Pawn, PieceData.Bishop));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y - 1), PieceData.Pawn, PieceData.Rook));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y - 1), PieceData.Pawn, PieceData.Queen));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y - 1), PieceData.Pawn, PieceData.Knight));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y - 1), PieceData.Pawn, PieceData.Bishop));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y - 1), PieceData.Pawn, PieceData.Rook));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y - 1), PieceData.Pawn, PieceData.Queen));
                     }
 
                     //capture to the rigth
                     if (startPosition.x + 1 <= 7 && (gamePosition[startPosition.x + 1 + (startPosition.y - 1) * 8] & PieceData.White) != 0)
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.Pawn, PieceData.Knight));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.Pawn, PieceData.Bishop));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.Pawn, PieceData.Rook));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.Pawn, PieceData.Queen));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.Pawn, PieceData.Knight));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.Pawn, PieceData.Bishop));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.Pawn, PieceData.Rook));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.Pawn, PieceData.Queen));
                     }
 
                     //capture to the left
                     if (startPosition.x - 1 >= 0 && (gamePosition[startPosition.x - 1 + (startPosition.y - 1) * 8] & PieceData.White) != 0)
                     {
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.Pawn, PieceData.Knight));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.Pawn, PieceData.Bishop));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.Pawn, PieceData.Rook));
-                        PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.Pawn, PieceData.Queen));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.Pawn, PieceData.Knight));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.Pawn, PieceData.Bishop));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.Pawn, PieceData.Rook));
+                        PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.Pawn, PieceData.Queen));
                     }
                 }
             }
 
             return PossibleMoves;
         }
-        public static List<Move> GetKnightMoves(byte[] gamePosition, Vector2Int startPosition)
+        public static List<Move> GetKnightMoves(byte[] gamePosition, HelperVector2Int startPosition)
         {
             List<Move> PossibleMoves = new List<Move>();
 
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 2, startPosition.y + 1), PieceData.Knight, PieceData.Knight));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 2, startPosition.y - 1), PieceData.Knight, PieceData.Knight));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 2, startPosition.y + 1), PieceData.Knight, PieceData.Knight));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 2, startPosition.y - 1), PieceData.Knight, PieceData.Knight));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y + 2), PieceData.Knight, PieceData.Knight));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y + 2), PieceData.Knight, PieceData.Knight));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y - 2), PieceData.Knight, PieceData.Knight));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y - 2), PieceData.Knight, PieceData.Knight));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 2, startPosition.y + 1), PieceData.Knight, PieceData.Knight));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 2, startPosition.y - 1), PieceData.Knight, PieceData.Knight));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 2, startPosition.y + 1), PieceData.Knight, PieceData.Knight));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 2, startPosition.y - 1), PieceData.Knight, PieceData.Knight));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y + 2), PieceData.Knight, PieceData.Knight));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y + 2), PieceData.Knight, PieceData.Knight));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y - 2), PieceData.Knight, PieceData.Knight));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y - 2), PieceData.Knight, PieceData.Knight));
 
             List<Move> ToBeRemovedMoves = GetOutOfBoundsMoves(gamePosition, PossibleMoves);
 
@@ -342,17 +341,17 @@ namespace ChessClassLib
 
             return PossibleMoves;
         }
-        public static List<Move> GetBishopMoves(byte[] gamePosition, Vector2Int startPosition)
+        public static List<Move> GetBishopMoves(byte[] gamePosition, HelperVector2Int startPosition)
         {
             byte color = ((gamePosition[startPosition.x + startPosition.y * 8] & PieceData.White) != 0) ? (PieceData.White) : (PieceData.Black);
             List<Move> PossibleMoves = new List<Move>();
 
             for (int i = 1; i < 8; ++i)
             {
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + i, startPosition.y + i), PieceData.Bishop, PieceData.Bishop));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + i, startPosition.y - i), PieceData.Bishop, PieceData.Bishop));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - i, startPosition.y + i), PieceData.Bishop, PieceData.Bishop));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - i, startPosition.y - i), PieceData.Bishop, PieceData.Bishop));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + i, startPosition.y + i), PieceData.Bishop, PieceData.Bishop));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + i, startPosition.y - i), PieceData.Bishop, PieceData.Bishop));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - i, startPosition.y + i), PieceData.Bishop, PieceData.Bishop));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - i, startPosition.y - i), PieceData.Bishop, PieceData.Bishop));
             }
 
             List<Move> ToBeRemovedMoves = GetOutOfBoundsMoves(gamePosition, PossibleMoves);
@@ -362,10 +361,10 @@ namespace ChessClassLib
                 PossibleMoves.Remove(move);
             }
 
-            ToBeRemovedMoves = GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(1, 1));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(1, -1)));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(-1, 1)));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(-1, -1)));
+            ToBeRemovedMoves = GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(1, 1));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(1, -1)));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(-1, 1)));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(-1, -1)));
 
             foreach (Move move in ToBeRemovedMoves)
             {
@@ -374,16 +373,16 @@ namespace ChessClassLib
 
             return PossibleMoves;
         }
-        public static List<Move> GetRookMoves(byte[] gamePosition, Vector2Int startPosition)
+        public static List<Move> GetRookMoves(byte[] gamePosition, HelperVector2Int startPosition)
         {
             List<Move> PossibleMoves = new List<Move>();
 
             for (int i = 1; i < 8; ++i)
             {
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + i, startPosition.y), PieceData.Rook, PieceData.Rook));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - i, startPosition.y), PieceData.Rook, PieceData.Rook));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y + i), PieceData.Rook, PieceData.Rook));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y - i), PieceData.Rook, PieceData.Rook));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + i, startPosition.y), PieceData.Rook, PieceData.Rook));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - i, startPosition.y), PieceData.Rook, PieceData.Rook));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y + i), PieceData.Rook, PieceData.Rook));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y - i), PieceData.Rook, PieceData.Rook));
             }
 
             List<Move> ToBeRemovedMoves = GetOutOfBoundsMoves(gamePosition, PossibleMoves);
@@ -393,10 +392,10 @@ namespace ChessClassLib
                 PossibleMoves.Remove(move);
             }
 
-            ToBeRemovedMoves = GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(1, 0));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(-1, 0)));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(0, 1)));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(0, -1)));
+            ToBeRemovedMoves = GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(1, 0));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(-1, 0)));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(0, 1)));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(0, -1)));
 
             foreach (Move move in ToBeRemovedMoves)
             {
@@ -405,20 +404,20 @@ namespace ChessClassLib
 
             return PossibleMoves;
         }
-        public static List<Move> GetQueenMoves(byte[] gamePosition, Vector2Int startPosition)
+        public static List<Move> GetQueenMoves(byte[] gamePosition, HelperVector2Int startPosition)
         {
             List<Move> PossibleMoves = new List<Move>();
 
             for (int i = 1; i < 8; ++i)
             {
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + i, startPosition.y + i), PieceData.Queen, PieceData.Queen));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + i, startPosition.y - i), PieceData.Queen, PieceData.Queen));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - i, startPosition.y + i), PieceData.Queen, PieceData.Queen));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - i, startPosition.y - i), PieceData.Queen, PieceData.Queen));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + i, startPosition.y), PieceData.Queen, PieceData.Queen));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - i, startPosition.y), PieceData.Queen, PieceData.Queen));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y + i), PieceData.Queen, PieceData.Queen));
-                PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y - i), PieceData.Queen, PieceData.Queen));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + i, startPosition.y + i), PieceData.Queen, PieceData.Queen));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + i, startPosition.y - i), PieceData.Queen, PieceData.Queen));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - i, startPosition.y + i), PieceData.Queen, PieceData.Queen));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - i, startPosition.y - i), PieceData.Queen, PieceData.Queen));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + i, startPosition.y), PieceData.Queen, PieceData.Queen));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - i, startPosition.y), PieceData.Queen, PieceData.Queen));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y + i), PieceData.Queen, PieceData.Queen));
+                PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y - i), PieceData.Queen, PieceData.Queen));
             }
 
             List<Move> ToBeRemovedMoves = GetOutOfBoundsMoves(gamePosition, PossibleMoves);
@@ -428,14 +427,14 @@ namespace ChessClassLib
                 PossibleMoves.Remove(move);
             }
 
-            ToBeRemovedMoves = GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(1, 0));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(-1, 0)));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(0, 1)));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(0, -1)));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(1, 1)));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(1, -1)));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(-1, 1)));
-            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new Vector2Int(-1, -1)));
+            ToBeRemovedMoves = GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(1, 0));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(-1, 0)));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(0, 1)));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(0, -1)));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(1, 1)));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(1, -1)));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(-1, 1)));
+            ToBeRemovedMoves.AddRange(GetInterceptedMoves(gamePosition, PossibleMoves, new HelperVector2Int(-1, -1)));
 
             foreach (Move move in ToBeRemovedMoves)
             {
@@ -444,18 +443,18 @@ namespace ChessClassLib
 
             return PossibleMoves;
         }
-        public static List<Move> GetKingMoves(byte[] gamePosition, Vector2Int startPosition)
+        public static List<Move> GetKingMoves(byte[] gamePosition, HelperVector2Int startPosition)
         {
             List<Move> PossibleMoves = new List<Move>();
 
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.King, PieceData.King));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.King, PieceData.King));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.King, PieceData.King));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.King, PieceData.King));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x + 1, startPosition.y), PieceData.King, PieceData.King));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x - 1, startPosition.y), PieceData.King, PieceData.King));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y + 1), PieceData.King, PieceData.King));
-            PossibleMoves.Add(new Move(startPosition, new Vector2Int(startPosition.x, startPosition.y - 1), PieceData.King, PieceData.King));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y + 1), PieceData.King, PieceData.King));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y - 1), PieceData.King, PieceData.King));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y + 1), PieceData.King, PieceData.King));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y - 1), PieceData.King, PieceData.King));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x + 1, startPosition.y), PieceData.King, PieceData.King));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x - 1, startPosition.y), PieceData.King, PieceData.King));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y + 1), PieceData.King, PieceData.King));
+            PossibleMoves.Add(new Move(startPosition, new HelperVector2Int(startPosition.x, startPosition.y - 1), PieceData.King, PieceData.King));
 
             List<Move> ToBeRemovedMoves = GetOutOfBoundsMoves(gamePosition, PossibleMoves);
 
@@ -474,5 +473,18 @@ namespace ChessClassLib
             return PossibleMoves;
         }
     }
+
+    public class HelperVector2Int
+    {
+        public int x { get; set; }
+        public int y { get; set; }
+
+        public HelperVector2Int(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
 
 }

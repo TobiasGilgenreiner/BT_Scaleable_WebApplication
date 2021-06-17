@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using System;
-using ChessClassLib;
 using System.Net.Http;
 using System.Net;
 using System.Text.RegularExpressions;
+using ChessClassLib;
 
 public class Board : MonoBehaviour
 {
@@ -95,7 +95,7 @@ public class Board : MonoBehaviour
                     client.BaseAddress = new Uri(response.Content.ReadAsStringAsync().Result);
                     response = client.GetAsync("?fenPositionString=" + Fen.PositionToFen(GamePosition) + "&color=" + transform.GetComponentInParent<GameManager>().NextToMove + "&oponent=1").Result;
                     int WorkerID = Convert.ToInt32(response.Content.ReadAsStringAsync().Result);
-                    client.BaseAddress = new Uri(Regex.Match(client.BaseAddress.AbsoluteUri, "https:\\/\\/[^/]+").Value);
+                    client.BaseAddress = new Uri(Regex.Match(client.BaseAddress.AbsoluteUri, "http:\\/\\/[^/]+").Value);
                     response = client.GetAsync("/Worker/Result?id=" + WorkerID).Result;
                     while (!response.IsSuccessStatusCode)
                     {

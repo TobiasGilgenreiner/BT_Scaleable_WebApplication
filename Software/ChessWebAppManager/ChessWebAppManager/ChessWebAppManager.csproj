@@ -16,10 +16,4 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="ChessClassLib">
-      <HintPath>..\..\ChessClassLib\ChessClassLib\bin\Debug\net5.0\ChessClassLib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

@@ -39,7 +39,7 @@ public class DragNDrop : MonoBehaviour
             }
             transform.GetComponent<BoxCollider2D>().enabled = true;
 
-            possibleMoves = board.PossibleMoves.Where(x => x.StartPosition.Equals(transform.parent.GetComponent<Cell>().Position)).ToList();
+            possibleMoves = board.PossibleMoves.Where(x => x.StartPosition.x.Equals(transform.parent.GetComponent<Cell>().Position.x) && x.StartPosition.y.Equals(transform.parent.GetComponent<Cell>().Position.y)).ToList();
             TargetCells = new List<Cell>();
             foreach(Move move in possibleMoves)
             {
