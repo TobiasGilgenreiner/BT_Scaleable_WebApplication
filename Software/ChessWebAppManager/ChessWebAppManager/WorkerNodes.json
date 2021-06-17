@@ -1,0 +1,8 @@
+{
+  "WorkerNodes" : [
+    {
+      "ID" : "1",
+      "Uri" : "https://localhost:5001"
+    }
+  ]
+}

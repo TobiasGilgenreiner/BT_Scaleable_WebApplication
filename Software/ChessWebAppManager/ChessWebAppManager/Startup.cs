@@ -9,8 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -35,14 +37,15 @@ namespace ChessWebAppManager
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ChessWebAppManager", Version = "v1" });
             });
 
-            //TBD use json to ready more only change filepath
-            WorkerNodeContext context = new DbContextFactory().Create();
-            WorkerNode newWorkerNode = new WorkerNode();
-            newWorkerNode.ID = 1;
-            newWorkerNode.Uri = "https://localhost:5001";
+            using (StreamReader sr = new StreamReader("WorkerNodes.json"))
+            {
+                string jsonString = sr.ReadToEnd();
+                List<WorkerNode> workerNodes = JsonConvert.DeserializeObject<WorkerNodeList>(jsonString).WorkerNodes;
 
-            context.WorkerNodes.Add(newWorkerNode);
-            context.SaveChanges();
+                WorkerNodeContext context = new DbContextFactory().Create();
+                context.WorkerNodes.AddRange(workerNodes);
+                context.SaveChanges();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
