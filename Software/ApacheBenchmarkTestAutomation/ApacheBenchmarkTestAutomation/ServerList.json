@@ -1,0 +1,82 @@
+{
+  "Platforms": [
+    {
+      "PlatformName": "RPI",
+      "Servers": [
+        {
+          "Tag": "Manager",
+          "Manager": "192.168.0.70:5000"
+        },
+        {
+          "Tag": "Worker",
+          "Manager": "192.168.0.80:5001"
+        },
+        {
+          "Tag": "Worker",
+          "Manager": "192.168.0.90:5001"
+        }
+      ]
+    },
+    {
+      "PlatformName": "Azure",
+      "Servers": [
+        {
+          "Tag": "Manager",
+          "Manager": "40.118.49.214:5000"
+        },
+        {
+          "Tag": "Worker",
+          "Manager": "13.93.65.53:5001"
+        },
+        {
+          "Tag": "Worker",
+          "Manager": "52.174.139.240:5001"
+        }
+      ]
+    },
+    {
+      "PlatformName": "AWS",
+      "Servers": [
+        {
+          "Tag": "Manager",
+          "Manager": "3.67.251.152:5000"
+        },
+        {
+          "Tag": "Worker",
+          "Manager": "3.126.32.231:5001"
+        },
+        {
+          "Tag": "Worker",
+          "Manager": "3.127.49.70:5001"
+        }
+      ]
+    },
+    {
+      "PlatformName": "GoogleCloud",
+      "Servers": [
+        {
+          "Tag": "Manager",
+          "Manager": "35.246.193.121:5000"
+        },
+        {
+          "Tag": "Worker",
+          "Manager": "35.246.159.74:5001"
+        },
+        {
+          "Tag": "Worker",
+          "Manager": "35.234.104.68:5001"
+        }
+      ]
+    }
+  ],
+  "Tags": [
+    {
+      "Name": "Manager",
+      "Endpoints": [ "/ChessAI" ]
+    },
+    {
+      "Name": "Worker",
+      "Endpoints": [ "/Worker/Start?fenPositionString=rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR&color=128&oponent=1", "/Worker/Result?id=[ID]" ]
+    }
+  ]
+}
