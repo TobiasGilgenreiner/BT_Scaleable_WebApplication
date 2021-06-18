@@ -1,6 +1,9 @@
+using ChessWebAppWorker.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
@@ -17,20 +20,7 @@ namespace ChessWebAppWorker
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>().UseUrls("http://" + GetLocalIPAddress() + ":5000");
+                    webBuilder.UseStartup<Startup>().UseUrls(JsonConvert.DeserializeObject<Url>(new StreamReader("Url.json").ReadToEnd()).Uri);
                 });
-
-        public static string GetLocalIPAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork && ip.ToString().Contains("192.168"))
-                {
-                    return ip.ToString();
-                }
-            }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
-        }
     }
 }
