@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1b25dc511ea9348bb950676c3a7746, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ServerAdress: http://192.168.0.02:5000
+  ServerAdress: http://192.168.0.2:5000
   EvenColor:
     serializedVersion: 2
     rgba: 4281816689
