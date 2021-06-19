@@ -1,0 +1,6 @@
+{
+  "ServerTags": [ "Worker0", "Worker1", "Manager" ],
+  "Tags": [ "RPI", "Azure", "AWS", "GCP" ],
+  "Ns": [ 10, 20, 50, 75, 100 ],
+  "Cs": [ 1, 5, 10, 15, 20 ]
+}
