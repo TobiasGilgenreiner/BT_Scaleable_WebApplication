@@ -19,6 +19,7 @@ set yrange [0:(A_max + B_max) + 30]
 set xtics rotate by -90
 
 #Layout
+set title font ",16" "Test mean (c Concurrent)"
 set ylabel font ",16" "Time [ms]"
 set xlabel font ",16" "Number of Requests n" offset 0,-2
 set key top left reverse
