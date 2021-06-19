@@ -1,0 +1,7 @@
+Host n c meanctime meandtime
+AWS 20 15 29 6033
+AWS 50 15 29 10896
+Azure 20 15 36 12246
+Azure 50 15 37 18434
+GCP 20 15 28 7310
+GCP 50 15 29 17462

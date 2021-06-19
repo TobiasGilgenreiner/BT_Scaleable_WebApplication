@@ -1,0 +1,5 @@
+Host n c meanctime meandtime
+AWS 100 50 29 1044
+Azure 100 50 32 1186
+GCP 100 50 27 1002
+RPI 100 50 0 12141

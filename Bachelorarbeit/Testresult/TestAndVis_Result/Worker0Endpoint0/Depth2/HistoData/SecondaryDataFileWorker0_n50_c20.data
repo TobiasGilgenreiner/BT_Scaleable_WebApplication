@@ -1,0 +1,4 @@
+Host n c meanctime meandtime
+AWS 50 20 30 522
+GCP 50 20 29 930
+RPI 50 20 1 2370
