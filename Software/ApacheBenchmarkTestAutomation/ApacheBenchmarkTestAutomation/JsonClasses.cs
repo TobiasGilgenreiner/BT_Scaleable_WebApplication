@@ -9,7 +9,8 @@ namespace ApacheBenchmarkTestAutomation
     public class Server
     {
         public string Tag { get; set; }
-        public string Manager { get; set; }
+        public int ID { get; set; }
+        public string Url { get; set; }
     }
 
     public class Platform
@@ -30,5 +31,9 @@ namespace ApacheBenchmarkTestAutomation
         public List<Tag> Tags { get; set; }
     }
 
-
+    public class TestConfiguration
+    {
+        public List<int> Requests { get; set; }
+        public List<int> Concurrent { get; set; }
+    }
 }

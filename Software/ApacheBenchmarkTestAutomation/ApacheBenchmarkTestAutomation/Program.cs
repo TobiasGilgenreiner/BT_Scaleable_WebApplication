@@ -2,6 +2,8 @@
 using System;
 using System.IO;
 using System.Diagnostics;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace ApacheBenchmarkTestAutomation
 {
@@ -9,14 +11,54 @@ namespace ApacheBenchmarkTestAutomation
     {
         static void Main(string[] args)
         {
-            JsonRoot myDeserializedClass;
+            JsonRoot jsonRoot;
             using (StreamReader sr = new StreamReader("ServerList.json"))
             {
                 string jsonString = sr.ReadToEnd();
-                myDeserializedClass = JsonConvert.DeserializeObject<JsonRoot>(jsonString);
+                jsonRoot = JsonConvert.DeserializeObject<JsonRoot>(jsonString);
             }
 
-            RunApacheBenchmark("http://192.168.0.70:5000/ChessAI", "C:/Users/Tobi/Desktop/TestDest/Test.csv", "C:/Users/Tobi/Desktop/TestDest/Test.data", 1000, 1);
+            TestConfiguration testConfiguration;
+            using (StreamReader sr = new StreamReader("TestConfiguration.json"))
+            {
+                string jsonString = sr.ReadToEnd();
+                testConfiguration = JsonConvert.DeserializeObject<TestConfiguration>(jsonString);
+            }
+
+            List<string> generatedFiles = new List<string>();
+
+            foreach(Platform platform in jsonRoot.Platforms)
+            {
+
+                foreach(Server server in platform.Servers)
+                {
+                    if (!server.Tag.Equals("Worker"))
+                        continue;
+
+                    foreach(string endpoint in jsonRoot.Tags.First(x => x.Name.Equals(server.Tag)).Endpoints)
+                    {
+                        if (!jsonRoot.Tags.First(x => x.Name.Equals(server.Tag)).Endpoints.IndexOf(endpoint).Equals(0))
+                            continue;
+
+                        foreach(int requests in testConfiguration.Requests)
+                        {
+                            foreach (int concurrent in testConfiguration.Concurrent)
+                            {
+                                if (requests < concurrent)
+                                    continue;
+
+                                string csvfile = "C:/Users/Tobi/Desktop/TestDest/" + platform.PlatformName + server.Tag + server.ID + "endpoint" + jsonRoot.Tags.First(x => x.Name.Equals(server.Tag)).Endpoints.IndexOf(endpoint) + "_n" + requests + "c" + concurrent + ".csv";
+                                string datafile = "C:/Users/Tobi/Desktop/TestDest/" + platform.PlatformName + server.Tag + server.ID + "endpoint" + jsonRoot.Tags.First(x => x.Name.Equals(server.Tag)).Endpoints.IndexOf(endpoint) + "_n" + requests + "c" + concurrent + ".data";
+                                generatedFiles.Add(csvfile);
+                                generatedFiles.Add(datafile);
+                                RunApacheBenchmark("http://" + server.Url + endpoint, csvfile, datafile, requests, concurrent);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //RunApacheBenchmark("http://192.168.0.70:5000/ChessAI", "C:/Users/Tobi/Desktop/TestDest/Test.csv", "C:/Users/Tobi/Desktop/TestDest/Test.data", 1000, 1);
             //Run ApacheBenchmark for every instance
             //n 100 300 600 1000 5000 10000
             //c 1 10 20 40 70 100
@@ -25,6 +67,8 @@ namespace ApacheBenchmarkTestAutomation
             // histogram mean ctime and mean dtime stacked, worker0 from each server grouped together, display all testsize groups
             // histogram worker1
             // histogram manager
+            // File with meanctime and mean ttime
+
             // all tests with same size into linegraph pick interesting ones ttime -> Request
 
             //run script
@@ -32,6 +76,7 @@ namespace ApacheBenchmarkTestAutomation
 
         public static void RunApacheBenchmark(string RequestAdress, string CSVOutputFile, string dataOutputFile, int Instances, int Concurrent)
         {
+            Console.WriteLine("C:/xampp/apache/bin/ab.exe" + " -n " + Instances + " -c " + Concurrent + " -g " + dataOutputFile + " -e " + CSVOutputFile + " " + RequestAdress);
             Process process = new Process();
             process.StartInfo.FileName = "C:/xampp/apache/bin/ab.exe";
             process.StartInfo.Arguments = "-n " + Instances + " -c " + Concurrent + " -g " + dataOutputFile + " -e " + CSVOutputFile + " " + RequestAdress;
