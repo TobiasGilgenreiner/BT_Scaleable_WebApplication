@@ -77,6 +77,8 @@ namespace ChessWebAppWorker.Controllers
 
                     //Start new Thread
                     WorkerInfo newWorkerInfo = new WorkerInfo(Fen.LoadPositionFromFen(fenPositionString), color, newWorkerResult.WorkerID);
+                    _context.SaveChanges();
+
                     bool WorkerQueued = false; 
                     if(oponent.Equals(ChessAI.OponentAlgorith.Rand))
                     {
@@ -89,11 +91,12 @@ namespace ChessWebAppWorker.Controllers
 
                     if (WorkerQueued)
                     {
-                        await _context.SaveChangesAsync();
                         return Accepted(HttpContext.Request.PathBase + "/Worker/Result/", newWorkerInfo.WorkerID);
                     }
                     else
                     {
+                        _context.Remove(newWorkerInfo);
+                        _context.SaveChanges();
                         return BadRequest("Couldn't queue Task");
                     }
                 }
