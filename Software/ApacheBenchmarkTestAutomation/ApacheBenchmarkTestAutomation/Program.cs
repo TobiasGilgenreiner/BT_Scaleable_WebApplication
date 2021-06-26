@@ -4,6 +4,9 @@ using System.IO;
 using System.Diagnostics;
 using System.Linq;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net;
+using System.Threading;
 
 namespace ApacheBenchmarkTestAutomation
 {
@@ -29,6 +32,8 @@ namespace ApacheBenchmarkTestAutomation
 
             foreach(Platform platform in jsonRoot.Platforms)
             {
+                if (!platform.PlatformName.Equals("AWS"))
+                    continue;
 
                 foreach(Server server in platform.Servers)
                 {
@@ -52,6 +57,25 @@ namespace ApacheBenchmarkTestAutomation
                                 generatedFiles.Add(csvfile);
                                 generatedFiles.Add(datafile);
                                 RunApacheBenchmark("http://" + server.Url + endpoint, csvfile, datafile, requests, concurrent);
+                                
+                                if(server.Tag.Equals("Worker"))
+                                {
+                                    Console.WriteLine("------------------------------------------------");
+                                    using ( var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
+                                    {
+                                        client.BaseAddress = new Uri("http://" + server.Url);
+
+                                        int running = -1;
+                                        while (running != 0)
+                                        {
+                                            HttpResponseMessage response = client.GetAsync("/Worker/ActiveThreads").Result;
+                                            running = Convert.ToInt32(response.Content.ReadAsStringAsync().Result);
+                                            Console.Write(running + ",");
+                                            Thread.Sleep(1000);
+                                        }
+                                    }
+                                    Console.WriteLine("------------------------------------------------");
+                                }
                             }
                         }
                     }
@@ -76,10 +100,10 @@ namespace ApacheBenchmarkTestAutomation
 
         public static void RunApacheBenchmark(string RequestAdress, string CSVOutputFile, string dataOutputFile, int Instances, int Concurrent)
         {
-            Console.WriteLine("C:/xampp/apache/bin/ab.exe" + " -n " + Instances + " -c " + Concurrent + " -g " + dataOutputFile + " -e " + CSVOutputFile + " " + RequestAdress);
+            Console.WriteLine("C:/xampp/apache/bin/ab.exe" + "-s 120 -n " + Instances + " -c " + Concurrent + " -g " + dataOutputFile + " -e " + CSVOutputFile + " " + RequestAdress);
             Process process = new Process();
             process.StartInfo.FileName = "C:/xampp/apache/bin/ab.exe";
-            process.StartInfo.Arguments = "-n " + Instances + " -c " + Concurrent + " -g " + dataOutputFile + " -e " + CSVOutputFile + " " + RequestAdress;
+            process.StartInfo.Arguments = "-s 120 -n " + Instances + " -c " + Concurrent + " -g " + dataOutputFile + " -e " + CSVOutputFile + " " + RequestAdress;
             process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
             process.Start();
             process.WaitForExit();

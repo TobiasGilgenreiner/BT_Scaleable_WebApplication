@@ -18,9 +18,9 @@ namespace GnuPlotAutomation
                 filterData = JsonConvert.DeserializeObject<FilterData>(jsonString);
             }
             
-            List<string> FileList = Directory.GetFiles(@"C:\Users\Tobi\Desktop\TestDest\Worker1Endpoint0\Depth3", "*.data", SearchOption.AllDirectories).ToList();
+            List<string> FileList = Directory.GetFiles(@"C:\Users\Tobi\Desktop\TestDest", "*.data", SearchOption.AllDirectories).ToList();
 
-            if (true)
+            if (false)
             {
                 List<List<string>> HistoPlotLists = new List<List<string>>();
 
@@ -146,7 +146,7 @@ namespace GnuPlotAutomation
             if (Files.Count != 6)
                 Console.WriteLine();
 
-            string basestring = "#Set output\nset terminal png\nset output \"[OUTPUTSTRING]\"\n\n#Set Diagrammstyle\nset style fill solid border - 1\nset style data histogram\nset style histogram rowstack\nset boxwidth 0.8\nset style histogram rowstack title offset 0,1\nset grid nopolar\nset grid noxtics\n\n#GetStats\nstats \"[MAINDATAFILE]\" using 4 name \"A\" nooutput\nstats \"[MAINDATAFILE]\" using 5 name \"B\" nooutput\nset yrange[0:(A_max + B_max) + 30]\nset xtics rotate by -90\n\n#Layout\nset title font \",16\" \"Mean Request Time ([C] Concurrent)\"\nset ylabel font \",16\" \"Time [ms]\"\nset xlabel font \",16\" \"Number of Requests n\" offset 0,-2\nset key top left reverse\n\n\n#Plot\nplot [N1][N2][N3][N4][N5]";
+            string basestring = "#Set output\nset terminal png\nset output \"[OUTPUTSTRING]\"\n\n#Set Diagrammstyle\nset style fill solid border - 1\nset style data histogram\nset style histogram rowstack\nset boxwidth 0.8\nset style histogram rowstack title offset 0,1\nset grid nopolar\nset grid noxtics\n\n#GetStats\nstats \"[MAINDATAFILE]\" using 4 name \"A\" nooutput\nstats \"[MAINDATAFILE]\" using 5 name \"B\" nooutput\nset yrange[0:(A_max + B_max) + 30]\nset xtics rotate by -90\n\n#Layout\nset title font \",16\" \"Durchschnittliche Anfragedauer ([C] gleichzeitige Anfragen)\"\nset ylabel font \",16\" \"Zeit [ms]\"\nset xlabel font \",16\" \"Anzahl an Anfragen n\" offset 0,-2\nset key top left reverse\n\n\n#Plot\nplot [N1][N2][N3][N4][N5]";
             string nplotstring = "newhistogram \"n = [N]\", \\\n	\"[SPLITDATAFILE]\" using 4:xticlabels(1) lc rgbcolor \"#E69F00\" title \"[TITLE1]\",\\\n	\"[SPLITDATAFILE]\" using 5:xticlabels(1) lc rgbcolor \"#0072B2\" title \"[TITLE2]\",\\\n";
 
             string ScriptPath = "C:/Users/Tobi/Desktop/TestDest/HistoData/HistogramScript" + ServerTag + "_c" + c + ".p";
@@ -178,8 +178,8 @@ namespace GnuPlotAutomation
 
                 if (first)
                 {
-                    tempstring = tempstring.Replace("[TITLE1]", "mean ctime");
-                    tempstring = tempstring.Replace("[TITLE2]", "mean dtime");
+                    tempstring = tempstring.Replace("[TITLE1]", "durchschnittlicher Verbindungsaufbau");
+                    tempstring = tempstring.Replace("[TITLE2]", "durchschnittliche Antwort");
                     first = false;
                 }
                 else
@@ -221,13 +221,9 @@ namespace GnuPlotAutomation
             directoryName = directoryName.Replace('\\', '/');
             Cs.Sort();
 
-            string baseString = "set terminal png\nset output \"[OUTPUTFILE]\"\nset grid nopolar\n\nset yrange[0:*]\n\nset title font \",16\" \"[TAG] [SERVERTAG] Benchmark ([N] Requests)\"\nset ylabel font \",16\" \"Total Time [ms]\"\nset xlabel font \",16\" \"Request\"\nset key top left reverse\nplot [FCS0][FCS1][FCS2][FCS3][FCS4]";
+            string baseString = "set terminal png\nset output \"[OUTPUTFILE]\"\nset grid nopolar\n\nset yrange[0:*]\n\nset title font \",16\" \"[TAG] [SERVERTAG] Stress Test ([N] Anfragen)\"\nset ylabel font \",16\" \"Zeit [ms]\"\nset xlabel font \",16\" \"Anfrage\"\nset key top left reverse\nplot [FCS0][FCS1][FCS2][FCS3][FCS4]";
 
-            string fileConfigurationString = "\"[FILEPATH]\" using 9 lc rgbcolor \"[COLOR]\" with lines title \"" + "[C] Concurrent\",\\\n";
-            //string fileConfigurationString2 = "\"[FILEPATH]\" using 9 lc rgbcolor \"purple\" with lines title \"" + Cs[1] + " Concurrent\",\\";
-            //string fileConfigurationString3 = "\"[FILEPATH]\" using 9 lc rgbcolor \"green\" with lines title \"" + Cs[2] + " Concurrent\",\\";
-            //string fileConfigurationString4 = "\"[FILEPATH]\" using 9 lc rgbcolor \"orange\" with lines title \"" + Cs[3] + " Concurrent\",\\";
-            //string fileConfigurationString5 = "\"[FILEPATH]\" using 9 lc rgbcolor \"red\" with lines title \"" + Cs[4] + " Concurrent\"";
+            string fileConfigurationString = "\"[FILEPATH]\" using 9 lc rgbcolor \"[COLOR]\" with lines title \"" + "[C] Gleichzeitig\",\\\n";
 
             string[] colors = { "black", "purple", "green", "orange", "red" };
 
@@ -247,18 +243,6 @@ namespace GnuPlotAutomation
             {
                 baseString = baseString.Replace("[FCS" + i + "]", "");
             }
-
-            //fileConfigurationString1 = fileConfigurationString1.Replace("[FILEPATH]", Files.First(x => x.Contains("c" + Cs[0] + ".data")));
-            //fileConfigurationString2 = fileConfigurationString2.Replace("[FILEPATH]", Files.First(x => x.Contains("c" + Cs[1] + ".data")));
-            //fileConfigurationString3 = fileConfigurationString3.Replace("[FILEPATH]", Files.First(x => x.Contains("c" + Cs[2] + ".data")));
-            //fileConfigurationString4 = fileConfigurationString4.Replace("[FILEPATH]", Files.First(x => x.Contains("c" + Cs[3] + ".data")));
-            //fileConfigurationString5 = fileConfigurationString5.Replace("[FILEPATH]", Files.First(x => x.Contains("c" + Cs[4] + ".data")));
-
-            //baseString = baseString.Replace("[FCS1]", fileConfigurationString1);
-            //baseString = baseString.Replace("[FCS2]", fileConfigurationString2);
-            //baseString = baseString.Replace("[FCS3]", fileConfigurationString3);
-            //baseString = baseString.Replace("[FCS4]", fileConfigurationString4);
-            //baseString = baseString.Replace("[FCS5]", fileConfigurationString5);
 
             baseString = baseString.Replace("[TAG]", HostTag);
             baseString = baseString.Replace("[SERVERTAG]", ServerTag);
